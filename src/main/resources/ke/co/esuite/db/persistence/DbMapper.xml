@@ -1,0 +1,59 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ke.co.esuite.db.persistence.DbMapper">
+    <cache />
+    
+    <insert id="saveMpesaConfirmation" parameterType="ConfirmationData">    		 
+		 INSERT INTO `mpesa_confirmation`
+		 (
+			 `TRANS_ID`, `TRANSACTION_TYPE`, `TRANS_TIME`, `TRANS_AMOUNT`, `BUSINESS_SHORT_CODE`, 
+			 `BILL_REF_NUMBER`, `INVOICE_NUMBER`, `ORG_ACCOUNT_BALANCE`, `THIRD_PARTY_TRANS_ID`, `MSISDN`, 
+			 `FIRST_NAME`, `MIDDLE_NAME`, `LAST_NAME`
+		 ) 
+		 VALUES (
+			 #{transID},#{transactionType},#{transTime},#{transAmount},#{businessShortCode},
+			 #{billRefNumber},#{invoiceNumber},#{orgAccountBalance},#{thirdPartyTransID},#{msisdn},
+			 #{firstName},#{middleName},#{lastName}
+		 )		
+	</insert>
+	
+	
+	<insert id="saveMpesaRegistrationUrls" parameterType="RegisterUrlData">    		 
+		 INSERT INTO `mpesa_register_url`
+		 (
+		 	`PAYBILL_NO`, `CONFIRMATION_URL`, `VALIDATION_URL`, `CREATE_DATE`
+		 ) 
+		 VALUES (
+		 	#{paybillNo},#{confirmationUrl},#{validationUrl},#{registeredDate}
+		 )		
+	</insert>
+	
+	<insert id="saveStkPush" parameterType="StkPushData">    		 
+		INSERT INTO `mpesa_online_payment`
+		(
+			`PHONE_NUMBER`, `PAYBILL_NO`, `AMOUNT`, `ACCOUNT_REFERENCE`, 
+			`DESCRIPTION`, `MERCHANT_REQUEST_ID`, `CHECKOUT_REQUEST_ID`, `RESPONSE_DESCRIPTION`, 
+			`RESPONSE_CODE`, `CUSTOMER_MESSAGE`
+		) VALUES (
+			#{phoneNumber},#{paybillNo},#{amount},#{accountReference},
+			#{description},#{merchantRequestID},#{checkoutRequestID},#{responseDescription},
+			#{responseCode},#{customerMessage}
+		)		
+	</insert>
+	
+	<update id="updateStkPushCallback" parameterType="StkPushCallbackData">
+		UPDATE `mpesa_online_payment`
+		SET `CALLBACK_RESULT_CODE` = #{resultCode}, 
+			`CALLBACK_RESULT_DESC` = #{resultDesc}, 
+			`CALLBACK_RECEIPT_NUMBER` = #{receiptNumber}, 
+			`CALLBACK_TRANS_DATE` = #{transDate},
+			`CALLBACK_AMOUNT` = #{amount},
+			`CALLBACK_PHONE_NUMBER` = #{phoneNumber}
+		WHERE `CHECKOUT_REQUEST_ID` = #{checkoutRequestID}
+		AND `MERCHANT_REQUEST_ID` = #{merchantRequestID}	
+	</update>
+
+	<select id="retrieveConfirmation" resultType="ConfirmationData">
+		SELECT * FROM `mpesa_confirmation` WHERE `TRANS_TIME` BETWEEN #{fromDate} AND #{toDate}
+	</select>
+  
+</mapper>
